@@ -1,5 +1,6 @@
 import random
-#Defining classes
+
+#creating classes
 class Patient:
     def __init__(self, id, name, age, medical_history, current_condition):
         self.id = id
@@ -25,15 +26,13 @@ class Prescription:
 class Hospital:
     def __init__(self):
         self.patients = []
-        self.doctors = []
         self.prescriptions = []
         self.consultation_queue = []
-        self.authenticated = False  # Initializing authenticated attribute to False
+        self.newly_added_consultation_queue = []  # New queue for newly added patients
+        self.authenticated = False
 
-    #Adding the functions to the patient record managing system
-    #creating a username and password to ensure privacy and integrity of the patients data
+    #creating a function that authorizes the user, in order to ensure the privacy and integrity of the patients data 
     def authenticate(self, username, password):
-        # Created a username and password to authenticate the person whos trying to make the changes
         if username == "admin" and password == "1234":
             self.authenticated = True
             print("Authentication successful.")
@@ -46,43 +45,41 @@ class Hospital:
 
     def check_authentication(self):
         return self.authenticated
-    def add_patient(self, patient):
-        #adding patients
-        self.patients.append(patient)
 
+    #adding new patients
+    def add_patient(self, patient):
+        self.patients.append(patient)
+    #function to update patient info
     def update_patient(self, patient_id, new_info):
-        #updating patient information utilziing dictonaries
         for patient in self.patients:
             if patient.id == patient_id:
                 patient.__dict__.update(new_info)
-
+    #removing/deleting patients
     def remove_patient(self, patient_id):
-        #removing a patient
         self.patients = [patient for patient in self.patients if patient.id != patient_id]
-
+    #scheduling appointments
     def schedule_appointment(self, patient_id, doctor_id, appointment_date, appointment_time):
-        #scheduling an appointment
         for patient in self.patients:
             if patient.id == patient_id:
                 patient.doctor = doctor_id
-                #asking for appointment information
                 patient.appointment_date = appointment_date
                 patient.appointment_time = appointment_time
                 break
-
-    def add_doctor(self, doctor):
-        #adding doctors
-        self.doctors.append(doctor)
-
+#issuing a prescription
     def add_prescription(self, prescription):
         self.prescriptions.append(prescription)
-
+#adding to consultation queue
     def add_to_consultation_queue(self, patient_id):
         self.consultation_queue.append(patient_id)
+        self.newly_added_consultation_queue.append(patient_id)  # Add to the new queue as well
 
     def remove_from_consultation_queue(self):
-        return self.consultation_queue.pop(0)
-    #linear search method admi
+        if self.consultation_queue:
+            return self.consultation_queue.pop(0)
+        else:
+            print("No patients in the consultation queue.")
+            return None
+#linear search to look for patient using their ID 
     def search_patient(self, patient_id):
         for patient in self.patients:
             if patient.id == patient_id:
@@ -96,7 +93,6 @@ class Hospital:
                 if d.id == patient.doctor:
                     doctor = d
                     break
-            #Gathers the medications presrbied to a specific patient (making sure it is = to the patient id)
             medications = [prescription.medication for prescription in self.prescriptions if prescription.patient_id == patient_id]
             return {
                 "Patient Name": patient.name,
@@ -110,9 +106,10 @@ class Hospital:
             }
         else:
             return "Patient not found"
-    #Using a radom generator to generate a list of objects (patients)
+#generating random patients 
     def generate_random_patients(self, num_patients):
-        names = ["Khaled", "Salma", "Sultan", "Mohamed", "Saif", "Mahra"]
+        names = ["Khaled", "Salma", "Sultan", "Mohamed", "Saif", "Mahra", "Salem", "Ahmed", "Rawdha", "Maryam",
+                 "Maitha", "Ghanem", "Abdulla", "Rashed"]
         medical_histories = ["Diabetes", "Heart Conditions", "Cholesterol", "Cancer", "Blood Pressure"]
         current_conditions = ["Critical", "Urgent", "Stable", "Good"]
         for i in range(num_patients):
@@ -122,29 +119,25 @@ class Hospital:
             medical_history = random.choice(medical_histories)
             current_condition = random.choice(current_conditions)
             patient = Patient(id, name, age, medical_history, current_condition)
-            self.add_patient(patient)
-    #Utilizing mergesort to sort the patients based on their medical condition
+            self.add_patient(patient)  # Add patient directly to existing patients list
+#usig merge sort to sort patients by their medical conditions 
     def merge_sort(self, patient_list):
         if len(patient_list) <= 1:
             return patient_list
 
-        # Divide the list into two halves
         mid = len(patient_list) // 2
         left_half = patient_list[:mid]
         right_half = patient_list[mid:]
 
-        # Recursively sort each half
         left_half = self.merge_sort(left_half)
         right_half = self.merge_sort(right_half)
 
-        # Merge the sorted halves
         return self.merge(left_half, right_half)
 
     def merge(self, left, right):
         merged = []
         left_index = right_index = 0
 
-        # Merge the two lists by comparing elements
         while left_index < len(left) and right_index < len(right):
             if sort_by_medical_condition(left[left_index]) <= sort_by_medical_condition(right[right_index]):
                 merged.append(left[left_index])
@@ -153,44 +146,39 @@ class Hospital:
                 merged.append(right[right_index])
                 right_index += 1
 
-        # Append remaining elements
         merged.extend(left[left_index:])
         merged.extend(right[right_index:])
 
         return merged
 
 def sort_by_medical_condition(patient):
-    return patient.medical_history[0]  # Assuming the first medical condition is the primary one
+    return patient.medical_history[0]
 
 def main():
     hospital = Hospital()
-
-    # Generate 5 random patients initially
     hospital.generate_random_patients(5)
 
     while True:
-        print("\n- Hospital Management System -")
-        # Check if authenticated before displaying options
         if hospital.check_authentication():
-            print("Existing Patients:")
-            for patient in hospital.patients:
-                print(f"ID: {patient.id}, Name: {patient.name}")
+            if hospital.patients:
+                print("Existing Patients:")
+                for patient in hospital.patients:
+                    print(f"ID: {patient.id}, Name: {patient.name}")
 
-            # Provifing the list of options (menu based interface where the user could choose which one they want)
-            print("\n1. Add Patient")
-            print("2. Update Patient")
-            print("3. Remove Patient")
-            print("4. Schedule Appointment")
-            print("5. Add Doctor")
-            print("6. Add Prescription")
-            print("7. Display Patient Summary")
-            print("8. Sort Patients by Medical Record")
-            print("9. Search for Patient")
-            print("10. Logout")
-            print("11. Exit")
+                print("\n1. Add Patient")
+                print("2. Update Patient")
+                print("3. Remove Patient")
+                print("4. Schedule Appointment")
+                print("5. Add patient to Consultation queue")
+                print("6. Add Prescription")
+                print("7. Display Patient Summary")
+                print("8. Sort Patients by Medical Record")
+                print("9. Search for Patient")
+                print("10. Remove from consultation queue")
+                print("11. Logout")
+                print("12. Exit")
 
-            # Allowing the user to input which option they would like
-            choice = input("Enter your choice: ")
+                choice = input("\nEnter your choice: ")
 
             if choice == '1':
                 name = input("Enter patient's name: ")
@@ -200,6 +188,7 @@ def main():
                 medical_history_list = [condition.strip() for condition in medical_history.split(",")]
                 patient = Patient(len(hospital.patients) + 1, name, age, medical_history_list, current_condition)
                 hospital.add_patient(patient)
+                hospital.add_to_consultation_queue(patient.id)  # Add to consultation queue
                 print("Patient added successfully!")
 
             elif choice == '2':
@@ -225,13 +214,18 @@ def main():
                 hospital.schedule_appointment(patient_id, doctor_id, appointment_date, appointment_time)
                 print("Appointment scheduled successfully!")
 
+
+
             elif choice == '5':
-                name = input("Enter doctor's name: ")
-                specialization = input("Enter doctor's specialization: ")
-                doctor_id = len(hospital.doctors) + 1
-                doctor = Doctor(doctor_id, name, specialization)
-                hospital.add_doctor(doctor)
-                print("Doctor added successfully!")
+                num_patients_to_add = int(input("Enter the number of patients to add to the consultation queue: "))
+                hospital.generate_random_patients(num_patients_to_add)
+                print("\nPatients added to existing patients list successfully!")
+                print("\nExisting Patients:")
+                for patient in hospital.patients:
+                    print(f"ID: {patient.id}, Name: {patient.name}")
+
+
+
 
             elif choice == '6':
                 patient_id = int(input("Enter patient ID to add prescription: "))
@@ -244,7 +238,7 @@ def main():
                 patient_id = int(input("Enter patient ID to display summary: "))
                 summary = hospital.display_patient_summary(patient_id)
                 if summary:
-                    print(summary)
+                  print(summary)
                 else:
                     print("Patient not found!")
 
@@ -271,12 +265,28 @@ def main():
                     print(f"Current Condition: {patient.current_condition}")
                 else:
                     print("Patient not found!")
+
+
+
+
+
+
+
             elif choice == '10':
+                num_patients_to_remove = int(
+                    input("Enter the number of patients to remove from the existing patients list: "))
+                for _ in range(num_patients_to_remove):
+                    removed_patient = hospital.patients.pop(0)  # Remove the first patient from the list
+                    print(
+                        f"Patient with ID {removed_patient.id} and name {removed_patient.name} removed from existing patients list.")
+
+
+            elif choice == '11':
                 hospital.logout()
                 print("Logged out successfully")
                 continue
 
-            elif choice == '11':
+            elif choice == '12':
                 print("Exiting System")
                 break
 
@@ -289,6 +299,6 @@ def main():
             password = input("Enter password: ")
             hospital.authenticate(username, password)
 
-#calling the funciton to run
+
 if __name__ == "__main__":
     main()
