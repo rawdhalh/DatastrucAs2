@@ -120,37 +120,45 @@ class Hospital:
             current_condition = random.choice(current_conditions)
             patient = Patient(id, name, age, medical_history, current_condition)
             self.add_patient(patient)  # Add patient directly to existing patients list
-#usig merge sort to sort patients by their medical conditions 
-    def merge_sort(self, patient_list):
-        if len(patient_list) <= 1:
-            return patient_list
+# This function sorts patients by their medical condition using merge sort algorithm
+def merge_sort(self, patient_list):
+    # Base case: if the list has 0 or 1 element, it's already sorted
+    if len(patient_list) <= 1:
+        return patient_list
 
-        mid = len(patient_list) // 2
-        left_half = patient_list[:mid]
-        right_half = patient_list[mid:]
+    # Split the list into two halves
+    mid = len(patient_list) // 2
+    left_half = patient_list[:mid]
+    right_half = patient_list[mid:]
 
-        left_half = self.merge_sort(left_half)
-        right_half = self.merge_sort(right_half)
+    # Recursively sort each half
+    left_half = self.merge_sort(left_half)
+    right_half = self.merge_sort(right_half)
 
-        return self.merge(left_half, right_half)
+    # Merge the sorted halves
+    return self.merge(left_half, right_half)
 
-    def merge(self, left, right):
-        merged = []
-        left_index = right_index = 0
+# This function merges two sorted lists into one sorted list
+def merge(self, left, right):
+    merged = []
+    left_index = right_index = 0
 
-        while left_index < len(left) and right_index < len(right):
-            if sort_by_medical_condition(left[left_index]) <= sort_by_medical_condition(right[right_index]):
-                merged.append(left[left_index])
-                left_index += 1
-            else:
-                merged.append(right[right_index])
-                right_index += 1
+    # Compare elements from both lists and append the smaller one to the merged list
+    while left_index < len(left) and right_index < len(right):
+        if sort_by_medical_condition(left[left_index]) <= sort_by_medical_condition(right[right_index]):
+            merged.append(left[left_index])
+            left_index += 1
+        else:
+            merged.append(right[right_index])
+            right_index += 1
 
-        merged.extend(left[left_index:])
-        merged.extend(right[right_index:])
+    # Append any remaining elements from the left and right lists
+    merged.extend(left[left_index:])
+    merged.extend(right[right_index:])
 
-        return merged
+    return merged
 
+# This function extracts the first character from the medical history for sorting
 def sort_by_medical_condition(patient):
     return patient.medical_history[0]
 
@@ -164,7 +172,7 @@ def main():
                 print("Existing Patients:")
                 for patient in hospital.patients:
                     print(f"ID: {patient.id}, Name: {patient.name}")
-
+#displaying the option in a menu interface for the user
                 print("\n1. Add Patient")
                 print("2. Update Patient")
                 print("3. Remove Patient")
@@ -176,7 +184,6 @@ def main():
                 print("9. Search for Patient")
                 print("10. Remove from consultation queue")
                 print("11. Logout")
-                print("12. Exit")
 
                 choice = input("\nEnter your choice: ")
 
@@ -267,11 +274,6 @@ def main():
                     print("Patient not found!")
 
 
-
-
-
-
-
             elif choice == '10':
                 num_patients_to_remove = int(
                     input("Enter the number of patients to remove from the existing patients list: "))
@@ -286,9 +288,6 @@ def main():
                 print("Logged out successfully")
                 continue
 
-            elif choice == '12':
-                print("Exiting System")
-                break
 
             else:
                 print("Invalid choice. Please enter a valid option.")
@@ -299,6 +298,6 @@ def main():
             password = input("Enter password: ")
             hospital.authenticate(username, password)
 
-
+#calling function
 if __name__ == "__main__":
     main()
