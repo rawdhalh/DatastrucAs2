@@ -82,7 +82,7 @@ class Hospital:
 
     def remove_from_consultation_queue(self):
         return self.consultation_queue.pop(0)
-
+    #linear search method admi
     def search_patient(self, patient_id):
         for patient in self.patients:
             if patient.id == patient_id:
@@ -185,8 +185,9 @@ def main():
             print("6. Add Prescription")
             print("7. Display Patient Summary")
             print("8. Sort Patients by Medical Record")
-            print("9. Logout")
-            print("10. Exit")
+            print("9. Search for Patient")
+            print("10. Logout")
+            print("11. Exit")
 
             # Allowing the user to input which option they would like
             choice = input("Enter your choice: ")
@@ -257,12 +258,26 @@ def main():
                     print(f"ID: {patient.id}, Name: {patient.name}, Medical Condition: {patient.medical_history}")
 
             elif choice == '9':
+                # Searching for a patient
+                patient_id = int(input("Enter patient ID to search: "))
+                patient = hospital.search_patient(patient_id)
+                if patient:
+                    print("Patient found!")
+                    print("Patient Details:")
+                    print(f"ID: {patient.id}")
+                    print(f"Name: {patient.name}")
+                    print(f"Age: {patient.age}")
+                    print(f"Medical History: {', '.join(patient.medical_history)}")
+                    print(f"Current Condition: {patient.current_condition}")
+                else:
+                    print("Patient not found!")
+            elif choice == '10':
                 hospital.logout()
-                print("Logged out successfully!")
+                print("Logged out successfully")
                 continue
 
-            elif choice == '10':
-                print("Exiting...")
+            elif choice == '11':
+                print("Exiting System")
                 break
 
             else:
